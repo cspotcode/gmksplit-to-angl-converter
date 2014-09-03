@@ -1,0 +1,29 @@
+/// <reference path="../typings/all.d.ts" />
+"use strict";
+
+export enum MouseEventCodes {
+  LEFT = 0,
+  RIGHT = 1,
+  MIDDLE = 2,
+  NO_BUTTON = 3,
+  LEFT_PRESSED = 4,
+  RIGHT_PRESSED = 5,
+  MIDDLE_PRESSED = 6,
+  LEFT_RELEASED = 7,
+  RIGHT_RELEASED = 8,
+  MIDDLE_RELEASED = 9,
+  ENTER = 10,
+  LEAVE = 11,
+  GLOBAL_LEFT = 50,
+  GLOBAL_RIGHT = 51,
+  GLOBAL_MIDDLE = 52,
+  GLOBAL_LEFT_PRESSED = 53,
+  GLOBAL_RIGHT_PRESSED = 54,
+  GLOBAL_MIDDLE_PRESSED = 55,
+  GLOBAL_LEFT_RELEASED = 56,
+  GLOBAL_RIGHT_RELEASED = 57,
+  GLOBAL_MIDDLE_RELEASED = 58,
+  WHEEL_UP = 60,
+  WHEEL_DOWN = 61
+}
+

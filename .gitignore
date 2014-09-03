@@ -1,0 +1,12 @@
+# Dependencies
+node_modules
+
+# IntelliJ/WebStorm project files
+.idea
+
+# Compiled source files
+src/**/*.js
+src/**/*.js.map
+
+# program output
+output
