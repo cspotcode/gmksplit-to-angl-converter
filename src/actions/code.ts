@@ -14,15 +14,16 @@ class GmActionCode extends GmAction {
   }
   
   toCode() {
+    var code = misc.removeUnnecessaryIndentation(misc.normalizeLineEndings(this.code));
     switch (this.appliesTo.target) {
       case AppliesTo.Targets.SELF:
-        return this.code;
+        return code;
 
       case AppliesTo.Targets.OTHER:
-        return 'with(other) {\n' + misc.indentCode(this.code) + '\n}';
+        return 'with(other) {\n' + misc.indentCode(code) + '\n}';
 
       case AppliesTo.Targets.OBJECT:
-        return 'with(' + this.appliesTo.objectName + ') {\n' + misc.indentCode(this.code) + '\n}';
+        return 'with(' + this.appliesTo.objectName + ') {\n' + misc.indentCode(code) + '\n}';
     }
   }
 }

@@ -70,3 +70,44 @@ export function nameToFsName(name: string): string {
   return name.replace(/\//g, '_');
 }
 
+var curlyBraceAtBeginning = /^\s*{/;
+var curlyBraceAtEnd = /}\s*$/;
+export function removeUnnecessaryIndentation(code: string): string {
+  // Is this code prefixed by some comments?  Pull them off, then add them back after removing any wrapping curly braces.
+  // TODO implement this.
+  
+  // Remove any curly braces wrapping the code
+  // For example, "{\n    what\n}\n" should become "\n    what\n"
+  var matchBegin = curlyBraceAtBeginning.exec(code);
+  var matchEnd = curlyBraceAtEnd.exec(code);
+  // Only remove curly braces if we found one at the beginning and end of the code
+  if(matchBegin && matchEnd) {
+    code = code.slice(matchBegin[0].length, matchEnd.index);
+  }
+  
+  // Re-add any prefixing comments that we removed earlier (see above)
+  // TODO implement this.
+  
+  // Find minimum indentation level for the code (level of indent that can be remove from *all* lines)
+  var codeLines = code.split('\n');
+  var minimumIndent = _(codeLines).map((line) => {
+    // If this line is purely whitespace, we can exclude it from consideration
+    if(line.match(/^\s*$/))
+        return Infinity;
+    // Otherwise, return the number of spaces at the start of the line (the indentation)
+    return line.match(/ */)[0].length;
+  }).min().value();
+  
+  // Remove minimum indent from each line and re-combine them
+  return codeLines.map((line) => line.slice(minimumIndent)).join('\n');
+
+}
+
+/**
+ * Convert all line endings to Unix-style (\n) from Windows-style (\r\n)
+ * @param code
+ * @returns {string}
+ */
+export function normalizeLineEndings(code: string): string {
+  return code.replace(/\r\n/g, '\n');
+}

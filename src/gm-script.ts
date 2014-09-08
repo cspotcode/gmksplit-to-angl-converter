@@ -24,7 +24,21 @@ class GmScript implements GmResource {
    * Outputs angl source code for this script, including function signature.
    */
   toAnglCode(): string {
-    var ret = 'script ' + this.name + '() {\n' + misc.indentCode(this.code) + '\n}\n';
+    
+    // Find all references to arguments in the code.
+    // This is an ugly hack to figure out which arguments this script accepts.
+    var highestArgumentFound = -1;
+    var matchArgumentRegExp = /\bargument(1[0-5]|[0-9](?![0-9]))\b/g;
+    var match;
+    while(match = matchArgumentRegExp.exec(this.code)) {
+      highestArgumentFound = Math.max(highestArgumentFound, parseInt(match[1]));
+    }
+    var argumentsString = _(new Array(highestArgumentFound + 1)).map((v, i) => 'argument' + i).join(', ');
+    
+    // Remove unnecessary indentation from code.
+    var code = misc.removeUnnecessaryIndentation(misc.normalizeLineEndings(this.code));
+    
+    var ret = 'script ' + this.name + '(' + argumentsString + ') {\n' + misc.indentCode(code) + '\n}\n';
     return ret;
   }
 }
