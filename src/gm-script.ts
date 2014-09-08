@@ -1,5 +1,7 @@
 "use strict";
 
+import _ = require('lodash');
+
 import GmResource = require('./gm-resource');
 import misc = require('./misc');
 
@@ -7,7 +9,7 @@ class GmScript implements GmResource {
   
   constructor(name: string, groupPath: Array<string>) {
     this.name = name;
-    this.groupPath = groupPath;
+    this.groupPath = groupPath.slice();
   }
   
   public name: string;

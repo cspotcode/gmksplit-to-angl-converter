@@ -5,6 +5,7 @@ import glob = require('glob');
 import xpath = require('xpath');
 
 import List = require('collections/list');
+import Set = require('collections/set');
 
 import misc = require('./misc');
 import GmResource = require('./gm-resource');
@@ -22,7 +23,7 @@ function buildResourceTree<T extends GmResource>(pathRoot: string, ctor: {new(na
   var group;
   while (group = unexploredGroups.shift()) {
     var groupFsPath = misc.groupPathToFsPath(group.path);
-    var globResult = glob.sync('Objects/' + groupFsPath + '/_resources.list.xml', misc.globOptions);
+    var globResult = glob.sync(pathRoot + '/' + groupFsPath + '/_resources.list.xml', misc.globOptions);
     var xml = misc.readFile(globResult[0]);
     var dom = misc.parseXml(xml);
     xpath.select('/resources/resource', dom).forEach((child:Node)=> {

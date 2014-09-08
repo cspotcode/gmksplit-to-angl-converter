@@ -12,6 +12,7 @@ import xpath = require('xpath');
 import glob = require('glob');
 import _ = require('lodash');
 
+// TODO remove unused imports
 import List = require('collections/list');
 import Set = require('collections/set');
 import Dict = require('collections/dict');
