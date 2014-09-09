@@ -52,7 +52,8 @@ export function capsWithUnderscoresToCamelCase(identifier: string, initialCaps: 
   return parts.map((v, i) => {
     var r = v.toLowerCase();
     if(i || initialCaps)
-      r[0] = r[0].toUpperCase();
+      r = r.replace(/^./, function(v) {return v.toUpperCase();});
+    return r;
   }).join('');
 }
 
