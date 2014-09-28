@@ -5,3 +5,4 @@ object <%= object.name %> <% if(object.parentName) { %>parent <%= object.parentN
 <% event.actions.forEach(function(action) { %><%= misc.indentCode(action.toCode(), 2) %>
 <% }); %>    }
 <% }); %>}
+export = <%= object.name %>;

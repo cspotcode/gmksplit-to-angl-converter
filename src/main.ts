@@ -152,5 +152,5 @@ allScripts.forEach((script) => {
 
 // Convert constants.xml into a script that declares many global constants
 var dom = misc.parseXml(misc.readFile('Constants.xml'));
-var constantsAnglSource = xpath.select('//constant', dom).map((node: Node): string => 'const ' + misc.attr(node, 'name') + ' = ' + misc.attr(node, 'value') + ';').join('\n');
+var constantsAnglSource = xpath.select('//constant', dom).map((node: Node): string => 'export const ' + misc.attr(node, 'name') + ' = ' + misc.attr(node, 'value') + ';').join('\n');
 fs.writeFileSync(path.resolve(misc.outputDir, 'constants.angl'), constantsAnglSource);

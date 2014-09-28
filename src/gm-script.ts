@@ -38,7 +38,7 @@ class GmScript implements GmResource {
     // Remove unnecessary indentation from code.
     var code = misc.removeUnnecessaryIndentation(misc.normalizeLineEndings(this.code));
     
-    var ret = 'script ' + this.name + '(' + argumentsString + ') {\n' + misc.indentCode(code) + '\n}\n';
+    var ret = 'script ' + this.name + '(' + argumentsString + ') {\n' + misc.indentCode(code) + '\n}\nexport = ' + this.name + ';\n';
     return ret;
   }
 }
