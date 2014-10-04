@@ -17,7 +17,7 @@ class GmActionSetAlarm extends GmAction {
   }
   
   toCode() {
-    var code = 'alarms[' + this.alarmNumber + ']'
+    var code = 'alarm[' + this.alarmNumber + ']'
       + (this.isRelative ? ' += ' : ' = ') + this.alarmValue + ';';
     
     switch(this.appliesTo.target) {
