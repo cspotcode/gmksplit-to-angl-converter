@@ -89,9 +89,6 @@ var rootObjectGroup= objectsTemp.rootResourceGroup;
 var eventReader = new EventReader();
 var actionReader = new ActionReader();
 
-var objectTemplate: string = fs.readFileSync('./templates/object-template.tmpl.angl', 'utf-8');
-var compiledObjectTemplate = _.template(objectTemplate);
-
 allObjects.forEach((object) => {
   // Open the object's XML and pull out any important info
   var xml = misc.readFile('Objects/' + misc.groupPathToFsPath(object.groupPath) + '/' + misc.nameToFsName(object.name) + '.xml');
@@ -116,18 +113,13 @@ allObjects.forEach((object) => {
     });
   });
   
-  // try dumping this object's source code, just to see what it looks like
-  var compiledAnglSource = compiledObjectTemplate({
-    object: object,
-    misc: misc
-  });
-  
   var outputDirectory = path.resolve(misc.outputDir, 'objects', misc.groupPathToFsPath(object.groupPath));
   var outputFilename = misc.nameToFsName(object.name) + '.angl';
   mkdirp.sync(outputDirectory);
   fs.writeFileSync(
     path.resolve(outputDirectory, outputFilename),
     compiledAnglSource);
+  var compiledAnglSource = object.toAnglCode();
 });
 
 // Build a hierarchy of all scripts
