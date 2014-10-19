@@ -1,4 +1,4 @@
-// Path: <%= object.groupPath.join(' / ') %>
+// Path: <%= object.groupPath.join(' / ') + (object.groupPath.length ? ' /' : '/') %>
 object <%= object.name %> <% if(object.parentName) { %>parent <%= object.parentName %> <% } %>{
 <% object.events.forEach(function(event) { %>
     script <%= event.methodName %>(<% event.methodArgumentNames.join(', ') %>) {
