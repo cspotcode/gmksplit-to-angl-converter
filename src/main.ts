@@ -81,6 +81,21 @@ interface ResourceListener {
   type: string;
 }
 
+function getDomForGmResource(resourceDirectory: string, gmResource: GmResource): Document {
+  var xml = misc.readFile(resourceDirectory + '/' + misc.groupPathToFsPath(gmResource.groupPath) + '/' + misc.nameToFsName(gmResource.name) + '.xml');
+  var dom = misc.parseXml(xml);
+  return dom;
+}
+
+function writeOutputFileForGmResource(resourceDirectory: string, gmResource: GmResource, fileContent: string, fileExtension: string = '') {
+  var outputDirectory = path.resolve(misc.outputDir, resourceDirectory, misc.groupPathToFsPath(gmResource.groupPath));
+  var outputFilename = misc.nameToFsName(gmResource.name) + fileExtension;
+  mkdirp.sync(outputDirectory);
+  fs.writeFileSync(
+    path.resolve(outputDirectory, outputFilename),
+    fileContent);
+}
+
 // Build a hierarchy of all objects
 var objectsTemp = buildResourceTree('Objects', GmObject);
 var allObjects = objectsTemp.allResources;
@@ -91,8 +106,7 @@ var actionReader = new ActionReader();
 
 allObjects.forEach((object) => {
   // Open the object's XML and pull out any important info
-  var xml = misc.readFile('Objects/' + misc.groupPathToFsPath(object.groupPath) + '/' + misc.nameToFsName(object.name) + '.xml');
-  var dom = misc.parseXml(xml);
+  var dom = getDomForGmResource('Objects', object);
   // fetch the name of this object's parent, if it has one
   var parentNameNode = xpath.select1('/object/parent/text()', dom);
   var parentName: string = parentNameNode ? parentNameNode.data : null;
@@ -113,13 +127,9 @@ allObjects.forEach((object) => {
     });
   });
   
-  var outputDirectory = path.resolve(misc.outputDir, 'objects', misc.groupPathToFsPath(object.groupPath));
-  var outputFilename = misc.nameToFsName(object.name) + '.angl';
-  mkdirp.sync(outputDirectory);
-  fs.writeFileSync(
-    path.resolve(outputDirectory, outputFilename),
-    compiledAnglSource);
   var compiledAnglSource = object.toAnglCode();
+
+  writeOutputFileForGmResource('objects', object, compiledAnglSource, '.angl');
 });
 
 // Build a hierarchy of all scripts
@@ -133,13 +143,8 @@ allScripts.forEach((script) => {
   script.code = misc.readFile('Scripts/' + misc.groupPathToFsPath(script.groupPath) + '/' + misc.nameToFsName(script.name) + '.gml');
   
   var anglSource = script.toAnglCode();
-  
-  var outputDirectory = path.resolve(misc.outputDir, 'scripts', misc.groupPathToFsPath(script.groupPath));
-  var outputFilename = misc.nameToFsName(script.name) + '.angl';
-  mkdirp.sync(outputDirectory);
-  fs.writeFileSync(
-    path.resolve(outputDirectory, outputFilename),
-    anglSource);
+
+  writeOutputFileForGmResource('scripts', script, anglSource, '.angl');
 });
 
 // Convert constants.xml into a script that declares many global constants
