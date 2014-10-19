@@ -23,6 +23,9 @@ var globOptions = misc.globOptions;
 import buildResourceTree = require('./build-resource-tree');
 import GmObject = require('./gm-object');
 import GmScript = require('./gm-script');
+import GmSprite = require('./gm-sprite');
+import SpriteMaskShape = require('./sprite-mask-shape');
+import SpriteBoundsMode = require('./sprite-bounds-mode');
 import GmResourceGroup = require('./gm-resource-group');
 import GmResource= require('./gm-resource');
 import readevent = require('./read-event');
@@ -151,3 +154,45 @@ allScripts.forEach((script) => {
 var dom = misc.parseXml(misc.readFile('Constants.xml'));
 var constantsAnglSource = xpath.select('//constant', dom).map((node: Node): string => 'export const ' + misc.attr(node, 'name') + ' = ' + misc.attr(node, 'value') + ';').join('\n');
 fs.writeFileSync(path.resolve(misc.outputDir, 'constants.angl'), constantsAnglSource);
+
+// Convert all sprites into a directory of JSON structures.
+var spritesTemp = buildResourceTree('Sprites', GmSprite);
+var rootSpritesGroup = spritesTemp.rootResourceGroup;
+var allSprites = spritesTemp.allResources;
+
+function parseBoolean(str: string): boolean {
+  var ret = {true: true, false: false}[str];
+  if(ret == null) throw new Error('Expected "true" or "false", got "' + str + '"');
+  return ret;
+}
+
+allSprites.forEach((sprite) => {
+  var dom = getDomForGmResource('Sprites', sprite);
+  
+  var originAttrs = misc.attrs(xpath.select1('/sprite/origin', dom));
+  sprite.origin.x = parseInt(originAttrs['x']);
+  sprite.origin.y = parseInt(originAttrs['y']);
+  sprite.mask.separate = parseBoolean(misc.innerText('sprite/mask/separate', dom));
+  var shapeName, shape = SpriteMaskShape[shapeName = misc.innerText('sprite/mask/shape', dom)];
+  if(typeof shape != 'number') throw new Error('Encountered unexpected sprite mask shape: ' + shapeName);
+  sprite.mask.shape = shape;
+  var boundsModeName, boundsMode = SpriteBoundsMode[boundsModeName = misc.attr('sprite/mask/bounds', dom, 'mode')];
+  if(typeof boundsMode != 'number') throw new Error('Encountered unexpected sprite bounds mode: ' + boundsModeName);
+  sprite.mask.bounds.mode = boundsMode;
+  sprite.mask.bounds.alphaTolerance = parseInt(misc.attr('sprite/mask/bounds', dom, 'alphaTolerance'));
+  ['left', 'right', 'top', 'bottom'].forEach((name) => {
+    var num = parseInt(misc.innerText('sprite/mask/bounds/' + name, dom));
+    sprite.mask.bounds[name] = _.isNaN(num) ? 0 : num;
+  });
+  sprite.preload = parseBoolean(misc.innerText('sprite/preload', dom));
+  sprite.smoothEdges = parseBoolean(misc.innerText('sprite/smoothEdges', dom));
+  sprite.transparent = parseBoolean(misc.innerText('sprite/transparent', dom));
+  
+  var json = sprite.toJson();
+
+  writeOutputFileForGmResource('sprites', sprite, json, '.json');
+});
+
+// Write a JSON file listing the names of all sprites.  This can be easily loaded into the compiler to add a global
+// variable for each sprite.
+fs.writeFileSync(path.resolve(misc.outputDir, 'sprites.json'), JSON.stringify(allSprites.map((sprite) => sprite.name), null, '    '));
