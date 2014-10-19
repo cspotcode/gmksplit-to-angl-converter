@@ -24,6 +24,7 @@ import buildResourceTree = require('./build-resource-tree');
 import GmObject = require('./gm-object');
 import GmScript = require('./gm-script');
 import GmSprite = require('./gm-sprite');
+import GmRoom = require('./gm-room');
 import SpriteMaskShape = require('./sprite-mask-shape');
 import SpriteBoundsMode = require('./sprite-bounds-mode');
 import GmResourceGroup = require('./gm-resource-group');
@@ -196,3 +197,36 @@ allSprites.forEach((sprite) => {
 // Write a JSON file listing the names of all sprites.  This can be easily loaded into the compiler to add a global
 // variable for each sprite.
 fs.writeFileSync(path.resolve(misc.outputDir, 'sprites.json'), JSON.stringify(allSprites.map((sprite) => sprite.name), null, '    '));
+
+
+// Convert all rooms into a directory of Angl files.
+var roomsTemp = buildResourceTree('Rooms', GmRoom);
+var rootRoomsGroup = roomsTemp.rootResourceGroup;
+var allRooms = roomsTemp.allResources;
+
+allRooms.forEach((room) => {
+  var dom = getDomForGmResource('Rooms', room);
+  var roomNode = xpath.select1('/room', dom);
+  
+  room.caption = misc.innerText('caption', roomNode) || '';
+  room.width = parseInt(misc.attr('size', roomNode, 'width'));
+  room.height = parseInt(misc.attr('size', roomNode, 'height'));
+  room.speed = parseInt(misc.innerText('speed', roomNode));
+  room.persistent = parseBoolean(misc.innerText('persistent', roomNode));
+  room.creationCode = misc.innerText('creationCode', roomNode);
+  // TODO process creationCode in the same way that code from an object is processed
+  
+  xpath.select('instances/instance', roomNode).forEach((instanceNode) => {
+    room.instances.push({
+      name: misc.innerText('object', instanceNode),
+      x: parseInt(misc.attr('position', instanceNode, 'x')),
+      y: parseInt(misc.attr('position', instanceNode, 'y')),
+      creationCode: misc.innerText('creationCode', instanceNode),
+      locked: parseBoolean(misc.innerText('locked', instanceNode))
+    });
+  });
+
+  var anglCode = room.toAnglCode();
+
+  writeOutputFileForGmResource('rooms', room, anglCode, '.angl');
+});

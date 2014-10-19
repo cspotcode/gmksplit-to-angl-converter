@@ -1,0 +1,24 @@
+// Path: <%= room.groupPath.join(' / ') + '/' %><%= nl %>
+object <%= room.name %> parent AnglRoom {<%= nl %>
+<%= nl %>
+<% if(room.instances.length) { %>
+    script createInstances() {<%= nl %>
+<% room.instances.forEach(function(instance) { %>
+        instance_create(<%= instance.x %>, <%= instance.y %>, <%= instance.name %>
+<% if(instance.creationCode) { %>
+, script() {<%= nl %>
+<%= misc.indentCode(instance.creationCode, 3) %><%= nl %>
+        }
+<% } /* if instance.creationCode */ %>
+);<%= nl %>
+<% }); /* room.instances.forEach */ %>
+    }<%= nl %>
+<% } /* if room.instances.length */ %>
+<%= nl %>
+<% if(room.creationCode) { %>
+    script onCreate() {<%= nl %>
+<%= misc.indentCode(room.creationCode, 2) %><%= nl %>
+    }<%= nl %>
+<% } /* if room.creationCode */ %>
+}<%= nl %>
+export = <%= room.name %>;<%= nl %>
