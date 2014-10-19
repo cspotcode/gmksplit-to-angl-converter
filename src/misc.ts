@@ -7,6 +7,7 @@ import fs = require('fs');
 import glob = require('glob');
 import _ = require('lodash');
 import xmldom = require('xmldom');
+import xpath = require('xpath');
 
 export var gmkToXmlBaseDir = '../Gang-Garrison-2/Source/gg2';
 
@@ -35,16 +36,58 @@ export function parseXml(xml: string): Document {
   return domParser.parseFromString(xml, 'text/xml');
 }
 
-export function attrs(node: Node) {
-  return <{[k: string]: string}>_(node.attributes)
+export function attrs(node: Node);
+export function attrs(xpath: string, node: Node);
+export function attrs(xpath: any, node?: Node) {
+  var _node = getNode(xpath, node);
+  if(!_node) return null;
+  return <{[k: string]: string}>_(_node.attributes)
     .map((v: Attr) => [v.name, v.value])
     .zipObject()
     .value();
 }
 
-export function attr(node: Node, attrName: string) {
-  var attr = node.attributes.getNamedItem(attrName);
+export function attr(node: Node, attrName: string): string;
+export function attr(xpathExpr: string, node: Node, attrName: string): string;
+export function attr(xpathExpr: any, node: any, attrName?: string): string {
+  var _node: Node;
+  if(typeof attrName === 'undefined') {
+    // 2-argument signature
+    attrName = node;
+    _node = xpathExpr;
+  } else {
+    // 3-argument signature
+    _node = getNode(xpathExpr, node);
+  }
+  if(!_node) return null;
+  var attr = _node.attributes.getNamedItem(attrName);
   return attr ? attr.value : null;
+}
+
+export function innerText(node: Node): string;
+export function innerText(xpathExpr: string, node: Node): string;
+export function innerText(xpathExpr: any, node?: Node): string {
+  var targetNode = getNode(xpathExpr, node);
+  if(!targetNode) return null;
+  var textNode = xpath.select1('text()', targetNode);
+  if(!textNode) return null;
+  return textNode.data;
+}
+
+function getNode(node: Node): Node;
+function getNode(xpathExpr: string, node: Node): Node;
+function getNode(xpathExpr: any, node?: Node): Node {
+  // normalize arguments
+  var _xpath: string,
+    _node: Node;
+  if(node) {
+    _xpath = xpathExpr;
+    _node = node;
+  } else {
+    _xpath = null;
+    _node = xpathExpr;
+  }
+  return _xpath ? xpath.select1(_xpath, _node) : _node;
 }
 
 export function capsWithUnderscoresToCamelCase(identifier: string, initialCaps: boolean = false): string {
