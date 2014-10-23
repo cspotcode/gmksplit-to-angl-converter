@@ -1,12 +1,12 @@
-/// <reference path="../typings/all.d.ts" />
+/// <reference path="../../typings/all.d.ts" />
 "use strict";
 
 import _ = require('lodash');
 
-import GmResource = require('./gm-resource');
-import misc = require('./misc');
-import SpriteBoundsMode = require('./sprite-bounds-mode');
-import SpriteMaskShape = require('./sprite-mask-shape');
+import GmResource = require('../gm-resource');
+import misc = require('../misc');
+import SpriteBoundsMode = require('./gm-sprite/sprite-bounds-mode');
+import SpriteMaskShape = require('./gm-sprite/sprite-mask-shape');
 
 class GmSprite implements GmResource {
   

@@ -1,11 +1,11 @@
-/// <reference path="../typings/all.d.ts" />
+/// <reference path="../../typings/all.d.ts" />
 "use strict";
 
 import _ = require('lodash');
 import fs = require('fs');
 
-import GmResource = require('./gm-resource');
-import misc = require('./misc');
+import GmResource = require('../gm-resource');
+import misc = require('../misc');
 
 var template;
 var init = function() {
