@@ -25,6 +25,8 @@ import GmObject = require('./gm-object');
 import GmScript = require('./gm-script');
 import GmSprite = require('./gm-sprite');
 import GmRoom = require('./gm-room');
+import GmBackground = require('./gm-background');
+import GmSound = require('./gm-sound');
 import SpriteMaskShape = require('./sprite-mask-shape');
 import SpriteBoundsMode = require('./sprite-bounds-mode');
 import GmResourceGroup = require('./gm-resource-group');
@@ -194,10 +196,6 @@ allSprites.forEach((sprite) => {
   writeOutputFileForGmResource('sprites', sprite, json, '.json');
 });
 
-// Write a JSON file listing the names of all sprites.  This can be easily loaded into the compiler to add a global
-// variable for each sprite.
-fs.writeFileSync(path.resolve(misc.outputDir, 'sprites.json'), JSON.stringify(allSprites.map((sprite) => sprite.name), null, '    '));
-
 
 // Convert all rooms into a directory of Angl files.
 var roomsTemp = buildResourceTree('Rooms', GmRoom);
@@ -230,3 +228,22 @@ allRooms.forEach((room) => {
 
   writeOutputFileForGmResource('rooms', room, anglCode, '.angl');
 });
+
+// Convert all backgrounds
+var backgroundsTemp = buildResourceTree('Backgrounds', GmBackground);
+var rootBackgroundsGroup = backgroundsTemp.rootResourceGroup;
+var allBackgrounds = backgroundsTemp.allResources;
+
+// Convert all sounds
+var soundsTemp = buildResourceTree('Sounds', GmSound);
+var rootSoundsGroup = soundsTemp.rootResourceGroup;
+var allSounds = soundsTemp.allResources;
+
+// Write JSON files listing the names of all sprites, sounds, and backgrounds.  This can be easily loaded into the compiler to add a global
+// variable for each resource.
+function writeJsonListOfResources(filename: string, allResources) {
+  fs.writeFileSync(path.resolve(misc.outputDir, filename), JSON.stringify(allResources.map((resource) => resource.name), null, '    '));
+}
+writeJsonListOfResources('sprites.json', allSprites);
+writeJsonListOfResources('backgrounds.json', allBackgrounds);
+writeJsonListOfResources('sounds.json', allSounds);
