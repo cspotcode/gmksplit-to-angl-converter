@@ -1,5 +1,6 @@
 // Path: <%= room.groupPath.join(' / ') + '/' %><%= nl %>
-object <%= room.name %> parent AnglRoom {<%= nl %>
+<% var roomIdentifier = room.name.replace(/ /g, '_'); %>
+object <%= roomIdentifier %> parent AnglRoom {<%= nl %>
 <%= nl %>
 <% if(room.instances.length) { %>
     script createInstances() {<%= nl %>
@@ -21,4 +22,4 @@ object <%= room.name %> parent AnglRoom {<%= nl %>
     }<%= nl %>
 <% } /* if room.creationCode */ %>
 }<%= nl %>
-export = <%= room.name %>;<%= nl %>
+export = <%= roomIdentifier %>;<%= nl %>
