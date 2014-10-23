@@ -1,5 +1,5 @@
-"use strict";
 /// <reference path="../typings/all.d.ts" />
+"use strict";
 
 require('source-map-support').install();
 
@@ -105,7 +105,7 @@ function writeOutputFileForGmResource(resourceDirectory: string, gmResource: GmR
 // Build a hierarchy of all objects
 var objectsTemp = buildResourceTree('Objects', GmObject);
 var allObjects = objectsTemp.allResources;
-var rootObjectGroup= objectsTemp.rootResourceGroup;
+var rootObjectGroup = objectsTemp.rootResourceGroup;
 
 var eventReader = new EventReader();
 var actionReader = new ActionReader();

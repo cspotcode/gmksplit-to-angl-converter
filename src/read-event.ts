@@ -1,5 +1,5 @@
-"use strict";
 /// <reference path="../typings/all.d.ts" />
+"use strict";
 
 import misc = require('./misc');
 import mouseeventcodes = require('./mouse-event-codes');
