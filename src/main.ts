@@ -17,6 +17,7 @@ import List = require('collections/list');
 import Set = require('collections/set');
 import Dict = require('collections/dict');
 import MultiMap = require('collections/multi-map');
+import Map = require('collections/map');
 
 import misc = require('./misc');
 var globOptions = misc.globOptions;
@@ -107,10 +108,16 @@ var objectsTemp = buildResourceTree('Objects', GmObject);
 var allObjects = objectsTemp.allResources;
 var rootObjectGroup = objectsTemp.rootResourceGroup;
 
+var parentlessObjects = new Set<string>();
+var objectChildren = new MultiMap<string, Set<string>>();
+(<any>objectChildren).bucket = () => {
+  return new Set<string>();
+};
+
 var eventReader = new EventReader();
 var actionReader = new ActionReader();
 
-allObjects.forEach((object) => {
+allObjects.forEach((object: GmObject) => {
   // Open the object's XML and pull out any important info
   var dom = getDomForGmResource('Objects', object);
   // fetch the name of this object's parent, if it has one
@@ -136,7 +143,26 @@ allObjects.forEach((object) => {
   var compiledAnglSource = object.toAnglCode();
 
   writeOutputFileForGmResource('objects', object, compiledAnglSource, '.angl');
+  
+  if(object.parentName) {
+    objectChildren.get(object.parentName).add(object.name);
+  } else {
+    parentlessObjects.add(object.name);
+  }
 });
+
+var objectHierarchy = {};
+function addObject(object, name) {
+  var obj = object[name] = {};
+  objectChildren.get(name).forEach((name) => {
+    addObject(obj, name);
+  });
+}
+parentlessObjects.forEach((name) => {
+  addObject(objectHierarchy, name);
+});
+
+fs.writeFileSync(path.resolve(misc.outputDir, 'object-hierarchy.json'), JSON.stringify(objectHierarchy, null, '    '));
 
 // Build a hierarchy of all scripts
 var scriptsTemp = buildResourceTree('Scripts', GmScript);
