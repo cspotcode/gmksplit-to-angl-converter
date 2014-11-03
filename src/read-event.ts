@@ -116,7 +116,9 @@ export class EventReader {
    * @param withName name of the other object (class) to collide with.
    */
   processCollisionEvent(withName: string) {
-    return new GmEvent('onCollisionWith' + withName);
+    var ret = new GmEvent('onCollisionWith' + withName);
+    ret.methodArgumentNames.push('other');
+    return ret;
   }
   
   processRoomStartEvent() {
