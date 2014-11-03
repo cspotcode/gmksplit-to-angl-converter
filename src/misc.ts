@@ -11,7 +11,7 @@ import xpath = require('xpath');
 
 export var gmkToXmlBaseDir = '../Gang-Garrison-2/Source/gg2';
 
-export var outputDir = './output';
+export var outputDir = '../gg2-transpiling/angl';
 
 export var globOptions:glob.IOptions = {
   cwd: path.resolve(gmkToXmlBaseDir)
