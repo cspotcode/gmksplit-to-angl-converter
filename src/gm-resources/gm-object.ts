@@ -10,7 +10,7 @@ import GmEvent = require('../gm-event');
 
 var template;
 var init = function() {
-  template = _.template(fs.readFileSync('./templates/object-template.tmpl.angl', 'utf-8'));
+  template = _.template(fs.readFileSync('./templates/object-template.tmpl.angl', 'utf-8').replace(/\r\n/g, '\n'));
 };
 init = _.once(init);
 
