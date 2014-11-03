@@ -1,7 +1,7 @@
 // Path: <%= object.groupPath.join(' / ') + (object.groupPath.length ? ' /' : '/') %>
 object <%= object.name %> <% if(object.parentName) { %>parent <%= object.parentName %> <% } %>{
 <% object.events.forEach(function(event) { %>
-    script <%= event.methodName %>(<% event.methodArgumentNames.join(', ') %>) {
+    script <%= event.methodName %>(<%= event.methodArgumentNames.join(', ') %>) {
 <% event.actions.forEach(function(action) { %><%= misc.indentCode(action.toCode(), 2) %>
 <% }); %>    }
 <% }); %>}
